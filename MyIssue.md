@@ -426,3 +426,42 @@ inline fun View.setSafeListener(crossinline action: () -> Unit) {
 </shape>
 ```
 
+### Issue_28：ConstraintLayout maxWidth
+```
+app:layout_constraintWidth_max="wrap"  <!-- 设置为 wrap -->
+app:layout_constraintWidth_percent="0.1"  <!-- 设置为想要的比例 -->
+android:layout_width="0dp"  <!-- 注意是 0dp -->
+```
+
+### Issue_29：ConstraintLayout layout_constraintDimensionRatio
+宽高比设置
+```
+android:layout_width="match_parent"
+android:layout_height="0dp"
+android:layout_marginStart="20dp"
+android:layout_marginEnd="20dp"
+android:background="@drawable/bg_white_corner_8"
+android:visibility="gone"
+app:layout_constraintDimensionRatio="h,1:1.18"
+app:layout_constraintTop_toBottomOf="@+id/span_bar"
+```
+高：宽 == 1.18
+
+###  Issue_30：Activity背景透明，DialogActivity
+```
+    <style name="dialogActivityTheme" parent="Theme.AppCompat.Light.Dialog">
+        <!--设置dialog的背景-->
+        <item name="android:background">#00000000</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+```
+
+
+
