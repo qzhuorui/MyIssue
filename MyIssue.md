@@ -426,15 +426,61 @@ inline fun View.setSafeListener(crossinline action: () -> Unit) {
 </shape>
 ```
 
-### Issue_28：ConstraintLayout maxWidth
+### Issue_28：动态修改margin
+
+```kotlin
+val guideNextLayoutParams = tv_guide_next.layoutParams
+if (guideNextLayoutParams is ViewGroup.MarginLayoutParams) {
+		guideNextLayoutParams.bottomMargin = 40f.dp.toInt()
+}
+```
+
+### Issue_29：overridePendingTransition Activity动画
+
+> override pending transition 覆盖 即将到来 动画
+
+通过这个方法添加的跳转动画会覆盖掉即将到来的跳转动画效果
+
+Activity的切换动画从业务层面上来说可以分为两种：
+
+1. Activity启动时的动画，
+2. 从Activity返回时的动画，
+
+它们都可以通过overridePendingTransition()来设置
+
+要设置启动时的动画需要在执行startActivity()或startActivityForResult()之后调用overridePendingTransition()
+
+要设置返回时的动画需要在finish()之后调用overridePendingTransition()
+
+启动动画和返回动画是相互独立的，设置启动动画不会对返回动画产生影响
+
+如果只在startActivity()或startActivityForResult()之后调用了overridePendingTransition()，没有在finish()的时候调用，则Activity返回的时候仍然是默认的动画效果，也可以在finish()的时候使用和启动时不同的动画效果
+
+### Issue_30：震动
+
+```kotlin
+private fun vibrate(millisecond: Long = 300) {
+        val vibrateService = getSystemService(Service.VIBRATOR_SERVICE) as Vibrator
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            vibrateService.vibrate(VibrationEffect.createOneShot(millisecond, 10))
+        } else {
+            vibrateService.vibrate(millisecond)
+        }
+    }
+```
+
+### Issue_31：ConstraintLayout maxWidth
+
 ```
 app:layout_constraintWidth_max="wrap"  <!-- 设置为 wrap -->
 app:layout_constraintWidth_percent="0.1"  <!-- 设置为想要的比例 -->
 android:layout_width="0dp"  <!-- 注意是 0dp -->
 ```
 
-### Issue_29：ConstraintLayout layout_constraintDimensionRatio
+### Issue_32：ConstraintLayout layout_constraintDimensionRatio
+
 宽高比设置
+
 ```
 android:layout_width="match_parent"
 android:layout_height="0dp"
@@ -445,9 +491,11 @@ android:visibility="gone"
 app:layout_constraintDimensionRatio="h,1:1.18"
 app:layout_constraintTop_toBottomOf="@+id/span_bar"
 ```
+
 高：宽 == 1.18
 
-###  Issue_30：Activity背景透明，DialogActivity
+###  Issue_33：Activity背景透明，DialogActivity
+
 ```
     <style name="dialogActivityTheme" parent="Theme.AppCompat.Light.Dialog">
         <!--设置dialog的背景-->
@@ -463,7 +511,7 @@ app:layout_constraintTop_toBottomOf="@+id/span_bar"
         <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
 ```
 
-###  Issue_31：体外无权限情况下，获取ssid
+###  Issue_34：体外无权限情况下，获取ssid
 ```
 private val WIFISSID_UNKNOW = "<unknown ssid>"
 
@@ -520,7 +568,7 @@ private val WIFISSID_UNKNOW = "<unknown ssid>"
     }
 ```
 
-###  Issue_32：获取运营商
+###  Issue_35：获取运营商
 ```
 private fun getOperators(context: Context): String {
         val tm = context.getSystemService(TELEPHONY_SERVICE) as TelephonyManager
@@ -536,7 +584,7 @@ private fun getOperators(context: Context): String {
     }
 ```
 
-###  Issue_33：DialogActivity
+###  Issue_36：DialogActivity
 第一步：修改Theme：
 
 ```
@@ -567,7 +615,7 @@ p.width = WindowManager.LayoutParams.WRAP_CONTENT
 window.attributes = p
 ```
 
-###  Issue_34：Px转Dp
+###  Issue_37：Px转Dp
 
 ```
 private fun px2Dip(pxValue: Int): Float {
