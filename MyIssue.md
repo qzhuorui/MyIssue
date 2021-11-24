@@ -463,5 +463,115 @@ app:layout_constraintTop_toBottomOf="@+id/span_bar"
         <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
 ```
 
+###  Issue_31：体外无权限情况下，获取ssid
+```
+private val WIFISSID_UNKNOW = "<unknown ssid>"
 
+    private fun getWifiSSID(context: Context): String {
+        val wifiManager: WifiManager = context.applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+        val info = wifiManager.connectionInfo
+        val wifiId = info.ssid
+        var result = wifiId.trim { it <= ' ' }
+        if (!TextUtils.isEmpty(result)) {
+            if (result[0] == '"' && result[result.length - 1] == '"') {
+                result = result.substring(1, result.length - 1)
+            }
+        }
+        if (TextUtils.isEmpty(result) || WIFISSID_UNKNOW.equals(result.trim { it <= ' ' }, ignoreCase = true)) {
+            val networkInfo = getNetworkInfo(context)
+            networkInfo?.let { _networkInfo ->
+                if (_networkInfo.isConnected) {
+                    if (_networkInfo.extraInfo != null) {
+                        result = _networkInfo.extraInfo.replace("\"", "")
+                    }
+                }
+            }
+        }
+        if (TextUtils.isEmpty(result) || WIFISSID_UNKNOW.equals(result.trim { it <= ' ' }, ignoreCase = true)) {
+            result = getSSIDByNetworkId(context)
+        }
+        return result
+    }
 
+    private fun getNetworkInfo(context: Context): NetworkInfo? {
+        try {
+            val connectivityManager: ConnectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+            return connectivityManager.activeNetworkInfo
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getSSIDByNetworkId(context: Context): String {
+        var ssid = WIFISSID_UNKNOW
+        val wifiManager = context.applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+        val wifiInfo = wifiManager.connectionInfo
+        val networkId = wifiInfo.networkId
+        val configuredNetworks: List<WifiConfiguration> = wifiManager.configuredNetworks
+        for (wifiConfiguration in configuredNetworks) {
+            if (wifiConfiguration.networkId == networkId) {
+                ssid = wifiConfiguration.SSID
+                break
+            }
+        }
+        return ssid
+    }
+```
+
+###  Issue_32：获取运营商
+```
+private fun getOperators(context: Context): String {
+        val tm = context.getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+        val operator = tm.simOperator
+        if (operator.equals("46000") || operator.equals("46002") || operator.equals("46007")) {
+            return "中国移动"
+        } else if (operator.equals("46001")) {
+            return "中国联通"
+        } else if (operator.equals("46003")) {
+            return "中国电信"
+        }
+        return ""
+    }
+```
+
+###  Issue_33：DialogActivity
+第一步：修改Theme：
+
+```
+<style name="dialogActivityTheme" parent="Theme.AppCompat.Light.Dialog">
+    <item name="android:background">@color/transparent</item>
+    <item name="android:windowBackground">@color/transparent</item>
+    <item name="android:windowFrame">@null</item>
+    <item name="windowNoTitle">true</item>
+    <item name="android:windowIsFloating">false</item>
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:backgroundDimEnabled">false</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+</style>
+```
+
+backgroundDimEnabled 决定是否使用蒙层
+
+第二步：代码中修改 `window.attributes`
+实现“包裹”效果，即只显示布局内容，空白区域不显示。
+此行代码实现后，具有点击空白区域，自动dismiss的效果
+
+```
+val p = window.attributes
+p.height = WindowManager.LayoutParams.WRAP_CONTENT
+p.width = WindowManager.LayoutParams.WRAP_CONTENT
+window.attributes = p
+```
+
+###  Issue_34：Px转Dp
+
+```
+private fun px2Dip(pxValue: Int): Float {
+    val scale = this.resources.displayMetrics.density
+    return (pxValue.toFloat() / scale + 0.5f)
+}
+```
