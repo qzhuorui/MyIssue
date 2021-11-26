@@ -623,3 +623,28 @@ private fun px2Dip(pxValue: Int): Float {
     return (pxValue.toFloat() / scale + 0.5f)
 }
 ```
+
+###  Issue_38：Kotlin输出路径下所有文件
+```
+import java.io.File
+
+fun main(args : Array<String>){
+    val inputFile = File("filepath")
+    eachFileRecurse(inputFile,::collect)
+}
+
+fun eachFileRecurse(inputFile: File, operation: (File) -> Unit) {
+    val files = inputFile.listFiles() ?: return
+    for (file in files) {
+        if (file.isDirectory) {
+            eachFileRecurse(file,operation)
+        } else {
+            collect(file)
+        }
+    }
+}
+
+fun collect(file:File){
+    println(file.absolutePath)
+}
+```
