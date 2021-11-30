@@ -113,6 +113,12 @@ public static void deleteTest(Context mContext, File file) {
 }
 ```
 
+```
+public static boolean isAndroid5() {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+}
+```
+
 ### Issue_8：签名
 命令格式：jarsigner -verbose -keystore [签名文件路径] -signedjar [签名后apk的文件路径] [未签名apk的文件路径] [证书别名]
 
@@ -648,3 +654,9 @@ fun collect(file:File){
     println(file.absolutePath)
 }
 ```
+
+###  Issue_39：java.lang.AssertionError: annotationType(): unrecognized Attribute name MODULE
+
+> 目前使用的Android Studio版本不支持您设置的compileSdkVersion
+
+
