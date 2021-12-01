@@ -659,4 +659,21 @@ fun collect(file:File){
 
 > 目前使用的Android Studio版本不支持您设置的compileSdkVersion
 
+### Issue_40：Android帧动画
+```kotlin
+private val animation by lazy {
+    val animation = AnimationDrawable()
+    animation.isOneShot = false
+    for (i in 0..45) {
+    val bitmap = BitmapFactory.decodeStream(assets.open("animation_500_kwlffqm500$i.jpg"))
+    animation.addFrame(BitmapDrawable(resources, bitmap), 50)
+    }
+    animation
+}
+```
+
+```kotlin
+iv_frame_animation.setImageDrawable(animation)
+animation.start()
+```
 
