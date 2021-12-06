@@ -677,3 +677,15 @@ iv_frame_animation.setImageDrawable(animation)
 animation.start()
 ```
 
+### Issue_41：AndroidStudio adb命令无效
+确保macOS terminal.app 中 adb生效并确保环境变量配置没有问题后
+在IDEA terminal中执行：`source ~/.bash_profile`
+
+### Issue_42：android:angle
+
+android:angle是渐变角度，必须为45的整数倍
+
+android:angle＝“0”时，是从左到右，android:angle＝“90”是从下到上来渲染的，android:angle＝“270”是从上到下来渲染的，android:angle＝“180”是从右到左来渲染的，android:angle＝“360”和android:angle＝“0”是一样的
+
+渲染时按照最原始的渲染色板（把控件内部看作一块可以绕中心旋转的板子）围绕控件中心来逆时针旋转相应的度数
+
