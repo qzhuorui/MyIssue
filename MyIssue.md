@@ -689,3 +689,70 @@ android:angle＝“0”时，是从左到右，android:angle＝“90”是从下
 
 渲染时按照最原始的渲染色板（把控件内部看作一块可以绕中心旋转的板子）围绕控件中心来逆时针旋转相应的度数
 
+### Issue_43：view动画简单使用
+
+```kotlin
+private fun startTitleAnimation(vararg v: View) {
+        val animation = AnimationUtils.loadAnimation(this, R.anim.anim_guide_sub_item)
+        v.forEach {
+            it.startAnimation(animation)
+        }
+    }
+```
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="300">
+    <translate
+        android:fromYDelta="100%"
+        android:toYDelta="0" />
+    <alpha
+        android:fromAlpha="0"
+        android:toAlpha="1"/>
+</set>
+```
+
+### Issue_44：通过Uri形式，读取assets中资源
+
+```kotlin
+ const val PATH_ASSETS = "file:///android_asset/"
+ 
+ val uri = PathConstant.PATH_ASSETS + "iphone_A1.mp4"
+```
+
+### Issue_45：_view.animate().scaleX(1.1f).setDuration(300).start() 用法
+
+> https://www.cnblogs.com/dasusu/p/8647702.html
+
+### Issue_46：homeBrew更新失败
+
+```
+//1.brew update失败后
+brew update --verbose
+//2.打开报错路径
+% cd /opt/homebrew/Library/Taps/homebrew/homebrew-core
+% ls -al
+//3.执行如下命令
+% git fetch --prune origin
+% git pull --rebase origin master
+//4.再次执行
+% brew update
+```
+
+### Issue_47：Can't build android. Execution failed for task ':generateJsonModelDebug'
+
+降低CMkae版本至 3.6以下
+
+或者
+
+install **Ninjia**
+
+待观察，安装后显示正常，但是删除build，gradle，idea后，又失效了 = =！
+
+
+
+
+
+
+
