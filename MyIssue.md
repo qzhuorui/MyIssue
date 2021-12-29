@@ -750,7 +750,20 @@ install **Ninjia**
 
 待观察，安装后显示正常，但是删除build，gradle，idea后，又失效了 = =！
 
+### Issue_48：usesCleartextTraffic
 
+android：usesCleartextTraffic 指示应用程序是否打算使用明文网络流量，例如明文HTTP。高版本默认关闭。
+
+引入某些方法，在使用计算网速，上下行流量时，可能需要手动打开。
+
+### Issue_49：ContextCompat使用
+
+获取资源，而非context.resource.getXXX
+
+```kotlin
+ContextCompat.getColor(this, R.color.white)
+ContextCompat.getDrawable(this, R.drawable.group)
+```
 
 
 
