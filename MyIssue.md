@@ -765,6 +765,10 @@ ContextCompat.getColor(this, R.color.white)
 ContextCompat.getDrawable(this, R.drawable.group)
 ```
 
+### Issue_50：AndroidStudio一直显示Analyzing
+
+Kotlin版本问题，修改成1.5.10
+
 
 
 
