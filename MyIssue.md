@@ -750,13 +750,15 @@ install **Ninjia**
 
 待观察，安装后显示正常，但是删除build，gradle，idea后，又失效了 = =！
 
+后面发现是有效的，代码仍不关联，不显示颜色，问题是kotlin版本问题。见Issue50
+
 ### Issue_48：usesCleartextTraffic
 
 android：usesCleartextTraffic 指示应用程序是否打算使用明文网络流量，例如明文HTTP。高版本默认关闭。
 
 引入某些方法，在使用计算网速，上下行流量时，可能需要手动打开。
 
-### Issue_49：ContextCompat使用
+### Issue_49：ContextCompat使用/代码中获取颜色
 
 获取资源，而非context.resource.getXXX
 
@@ -768,6 +770,158 @@ ContextCompat.getDrawable(this, R.drawable.group)
 ### Issue_50：AndroidStudio一直显示Analyzing
 
 Kotlin版本问题，修改成1.5.10
+
+### Issue_51：Fragment懒加载
+
+建议使用ViewPager2 + TabLayout
+
+ViewPager2默认情况下**不会**预加载出两边Fragment，相当于默认就是懒加载。但是对于Fragment多个情况下，可能会造成Fragment多次销毁和创建。
+
+懒加载实现：
+
+1. 使用ViewPager2 + TabLayout
+2. Adapter使用`FragmentStateAdapter`
+3. offscreenPageLimit为Fragment size
+
+将加载数据的逻辑，放到Fragment的onResume()中，如此保证了在Fragment可见时才会加载
+
+```kotlin
+val adapter = ViewPagerAdapter(supportFragmentManager, lifecycle, fragmentList)
+
+            main_viewpager.adapter = adapter
+            main_viewpager.offscreenPageLimit = fragmentList.size
+
+            main_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    val view = tab?.customView?.findViewById<TextView>(R.id.tv_home_tab_item)
+                    view?.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.tab_select
+                        )
+                    )
+                    view?.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    val view = tab?.customView?.findViewById<TextView>(R.id.tv_home_tab_item)
+                    view?.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.tab_un_select
+                        )
+                    )
+                    view?.typeface = Typeface.defaultFromStyle(Typeface.NORMAL)
+                }
+
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                }
+            })
+
+            TabLayoutMediator(main_tablayout, main_viewpager) { tab, pos ->
+                val tabCustomView = LayoutInflater.from(this@MainActivity)
+                    .inflate(R.layout.item_home_tab, main_tablayout, false)
+
+                val tabCustomTextview = tabCustomView.findViewById<TextView>(R.id.tv_home_tab_item)
+                tabCustomTextview.text = tabList[pos]
+
+                if (pos == main_viewpager.currentItem) {
+                    tabCustomTextview.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.tab_select
+                        )
+                    )
+                } else {
+                    tabCustomTextview.setTextColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.tab_un_select
+                        )
+                    )
+                }
+                tab.customView = tabCustomView
+            }.attach()
+```
+
+```kotlin
+inner class ViewPagerAdapter(
+        fm: FragmentManager,
+        lifecycle: Lifecycle,
+        private val fragmentList: LinkedList<Fragment>
+    ) : FragmentStateAdapter(fm, lifecycle) {
+
+        override fun getItemCount(): Int {
+            return fragmentList.size
+        }
+
+        override fun createFragment(position: Int): Fragment {
+            return fragmentList[position]
+        }
+    }
+```
+
+### Issue_52：Android权限请求，一次请求完成
+
+在Splash中直接判断，请求所有需要的权限
+
+```kotlin
+private var mPermissionList = arrayListOf<String>()
+
+fun checkSinglePermission(context: Context, permissionName: String): Boolean {
+        return if (Build.VERSION.SDK_INT >= 23) {
+            ContextCompat.checkSelfPermission(
+                context,
+                permissionName
+            ) == PackageManager.PERMISSION_GRANTED
+        } else true
+    }
+```
+
+```kotlin
+private fun initPermission() {
+        mPermissionList.clear()
+        for (i in permissionArray.indices) {
+            if (!PermissionUtil.checkSinglePermission(this, permissionArray[i]))
+                mPermissionList.add(permissionArray[i])
+        }
+        if (mPermissionList.size > 0) {
+            ActivityCompat.requestPermissions(
+                this,
+                permissionArray,
+                "requestAllPermission".absHash()
+            )
+        } else {
+            realGotoMain()
+        }
+    }
+```
+
+```kotlin
+override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        var hasPermissionDismiss = false
+        if (requestCode == "requestAllPermission".absHash()) {
+            for (i in grantResults.indices) {
+                if (grantResults[i] != PermissionChecker.PERMISSION_GRANTED)
+                    hasPermissionDismiss = true
+            }
+            if (hasPermissionDismiss) {
+                val packageURI = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI)
+                startActivity(intent)
+            } else {
+                realGotoMain()
+            }
+        }
+    }
+```
+
+
 
 
 
