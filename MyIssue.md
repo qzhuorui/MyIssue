@@ -921,6 +921,58 @@ override fun onRequestPermissionsResult(
     }
 ```
 
+### Issue_53：childFragmentManager / supportFragmentManager
+
+childFragmentManager：
+
+Return a private FragmentManager for placing and managing Fragments inside of this Fragment
+
+返回一个私有FragmentManager，用于在此片段中放置和管理片段
+
+supportFragmentManager：
+
+Return the FragmentManager for interacting with fragments associated with this activity
+
+返回FragmentManager以与与此活动关联的片段进行交互
+
+### Issue_54：room数据库问题
+
+1. cannot find implementation for com.useful.toolkits.feature_wallpaper.utils.AppDatabase. AppDatabase_Impl does not exist
+2. 使用kapt，错误Execution failed for task ':feature_wallpaper:kaptDebugKotlin'. > A failure
+
+解决方法：
+
+1. ```kotlin
+   def room_version = "2.4.0-alpha03"
+       implementation "androidx.room:room-runtime:$room_version"
+       kapt "androidx.room:room-compiler:$room_version"
+       implementation "androidx.room:room-ktx:$room_version"
+   ```
+
+2. 只在对应module中添加`room依赖` ,项目中不需要添加
+
+3. 此时错误2，会提示不能使用kapt，要是用 `annotationProcessor` ，但是检查gradle中有使用`kotlin-kapt` 这是为啥呢？添加方式原因：
+
+4. ```kotlin
+   //plugins {
+   //    id 'com.android.library'
+   //    id 'kotlin-android'
+   //    id 'kotlin-android-extensions'
+   //    id 'kotlin-kapt'
+   //}
+   ```
+
+5. ```kotlin
+   apply plugin: 'com.android.library'
+   apply plugin: 'kotlin-android'
+   apply plugin: 'kotlin-android-extensions'
+   apply plugin: 'kotlin-kapt'
+   ```
+
+6. 使用第二种，而非第一种
+
+
+
 
 
 
