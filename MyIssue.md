@@ -971,7 +971,30 @@ Return the FragmentManager for interacting with fragments associated with this a
 
 6. 使用第二种，而非第一种
 
+### Issue_55：加载：非本Activity所绑定的xml布局文件中的控件
 
+LayoutInflater factory = LayoutInflater.from(当前类.this); 
+
+View layout = factory.inflate(R.layout.你要获取的另一个XML, null); 
+
+TextView textview = (TextView) layout.findViewById(R.id.控件ID);
+
+一行写完就是：
+
+TextView textview = (TextView) LayoutInflater.from(当前类.this).inflate(R.layout.你要获取的另一个XML, null).findViewById(R.id.控件ID);
+
+### Issue_56：MediaPlayer加载assets下mp3
+
+```kotlin
+private val mediaPlayer by lazy {
+        val fd = assets.openFd("music.mp3")
+        val mediaPlayer = MediaPlayer()
+        mediaPlayer.setDataSource(fd.fileDescriptor, fd.startOffset, fd.length)
+        mediaPlayer.isLooping = true
+        mediaPlayer.prepare()
+        mediaPlayer
+    }
+```
 
 
 
