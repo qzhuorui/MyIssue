@@ -969,7 +969,7 @@ Return the FragmentManager for interacting with fragments associated with this a
    apply plugin: 'kotlin-kapt'
    ```
 
-6. 使用第二种，而非第一种
+6. 使用第二种，而非第一种f
 
 ### Issue_55：加载：非本Activity所绑定的xml布局文件中的控件
 
@@ -996,9 +996,68 @@ private val mediaPlayer by lazy {
     }
 ```
 
+### Issue_57：vibrator持续震动
 
+```kotlin
+private val vibrator by lazy {
+	getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+}
 
+if (vibrator.hasVibrator()) {
+            if (start) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val ve = VibrationEffect.createWaveform(
+                        longArrayOf(0, 30),
+                        0
+                    )
+                    vibrator.vibrate(ve)
+                } else {
+                    vibrator.vibrate(longArrayOf(0, 30), 0)
+                }
+            } else {
+                vibrator.cancel()
+            }
+        } else {
+            "不支持震动除尘".toast()
+        }
+    
+```
 
+### Issue_58：app启动一瞬间状态栏颜色变化
+
+colorPrimaryDark此属性决定，改为白色
+
+### Issue_59：Lottie界面，设置全屏，隐藏下方虚拟按键
+
+```kotlin
+fun setFullscreen() {
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+    }
+```
+
+```kotlin
+protected open fun hideBottomUIMenu() {
+        try {
+            if (Build.VERSION.SDK_INT in 12..18) { // lower api
+                val v = this.window.decorView
+                v.systemUiVisibility = View.GONE
+            } else if (Build.VERSION.SDK_INT >= 19) {
+                //for new api versions.
+                val decorView = window.decorView
+                val uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE)
+                decorView.systemUiVisibility = uiOptions
+                window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+            }
+        } catch (e: Exception) {
+        }
+    }
+```
 
 
 
