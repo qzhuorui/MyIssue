@@ -1059,5 +1059,7 @@ protected open fun hideBottomUIMenu() {
     }
 ```
 
+### Issue_60：app退出，非crash和anr
 
+倒入其他module时，遇到个奇怪现象。进入activity时自动退出，不是崩溃。检查下，是不是有地方发送 `ACTION_CLOSE_SYSTEM_DIALOGS` 此广播了。这个是系统Home键的广播。所以会出现app退出情况。
 
