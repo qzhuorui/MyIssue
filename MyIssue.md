@@ -1063,3 +1063,16 @@ protected open fun hideBottomUIMenu() {
 
 倒入其他module时，遇到个奇怪现象。进入activity时自动退出，不是崩溃。检查下，是不是有地方发送 `ACTION_CLOSE_SYSTEM_DIALOGS` 此广播了。这个是系统Home键的广播。所以会出现app退出情况。
 
+### Issue_61：HtmlCompat修改text颜色
+
+之前一直使用的是StringSpannable，但如果仅需要修改颜色的话，可以使用androidX下的HtmlCompat
+
+```kotlin
+binding.adFunctionMessage.text = HtmlCompat.fromHtml(
+                        "长时间未查杀病毒，可能有<font color=\"#2A81F8\">木马病毒</font>入侵风险",
+                        HtmlCompat.FROM_HTML_MODE_COMPACT
+                    )
+```
+
+
+
