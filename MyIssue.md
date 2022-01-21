@@ -1074,5 +1074,23 @@ binding.adFunctionMessage.text = HtmlCompat.fromHtml(
                     )
 ```
 
+### Issue_62：监听USB插拔广播
+
+今天碰到个情况，同事需要监听USB的插拔广播，他使用的是
+
+```
+ACTION_USB_DEVICE_ATTACHED
+ACTION_USB_DEVICE_DETACHED
+```
+
+但是不灵敏，监听不稳定。
+
+我之前实现类似功能时，使用的是，效果还不错，没发现接受不到的情况。特此记录下
+
+```
+Intent.ACTION_POWER_CONNECTED
+Intent.ACTION_POWER_DISCONNECTED
+```
+
 
 
