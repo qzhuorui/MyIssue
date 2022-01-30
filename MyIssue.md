@@ -125,6 +125,12 @@ public static boolean isAndroid5() {
 ### Issue_9：SHA1
 `keytool -list -printcert -jarfile [*].apk`
 
+```
+keytool -list -v -keystore D:\my.keystore -storepass 111111
+```
+
+ 命令里面的111111为证书的密码
+
 ### Issue_10：Dialog Match时左右不平铺
 setBackgroundDrawable
 ```
@@ -1092,5 +1098,57 @@ Intent.ACTION_POWER_CONNECTED
 Intent.ACTION_POWER_DISCONNECTED
 ```
 
+### Issue_63：权限处理（永远拒绝&不再提示）
 
+```kotlin
+private val permissionDialog by lazy {
+        val dialog = AlertDialog.Builder(this)
+            .setMessage("没有该权限，此应用程序可能无法正常工作。打开应用设置以修改应用权限")
+            .setNegativeButton(
+                "取消"
+            ) { dialog, which ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(
+                "开启"
+            ) { dialog, which ->
+                dialog.dismiss()
+                PermissionUtil.jumpSysSetting(this)
+            }.create()
+        dialog
+    }
+
+    private fun permissionInvoke(
+        permissions: Array<out String>,
+        grantResults: IntArray,
+        message: String,
+        grantFun: (() -> Unit)? = null
+    ) {
+        var hasAllGranted = true
+        for (i in permissions.indices) {
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                hasAllGranted = false
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
+                    permissionDialog.setMessage(message)
+                    permissionDialog.show()
+                    permissionDialog.getButton(AlertDialog.BUTTON_POSITIVE).setPadding(15)
+                    permissionDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setPadding(15)
+                }
+            }
+        }
+        if (hasAllGranted) {
+            grantFun?.invoke()
+        }
+    }
+```
+
+### Issue_64：是否到达底部，加载更多
+
+```
+home_frag_nest_container.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if (scrollY == v.getChildAt(0).measuredHeight - v.measuredHeight) {
+                //load
+            }
+        })
+```
 
