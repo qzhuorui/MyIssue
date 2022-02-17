@@ -1152,3 +1152,26 @@ home_frag_nest_container.setOnScrollChangeListener(NestedScrollView.OnScrollChan
         })
 ```
 
+### Issue_65：View设置动画
+
+```kotlin
+val rotateAnim by lazy {
+        AnimationUtils.loadAnimation(mActivity, R.anim.ks_news_refresh_rotate)
+    }
+
+binding?.refreshIcon?.startAnimation(rotateAnim)
+```
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <rotate
+        android:fromDegrees="0"
+        android:toDegrees="359"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="300"
+        android:repeatCount="infinite"/>
+</set>
+```
+
