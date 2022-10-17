@@ -1152,3 +1152,68 @@ home_frag_nest_container.setOnScrollChangeListener(NestedScrollView.OnScrollChan
         })
 ```
 
+###  Issue_65：获取当前运行APP的appPackage，appActivity
+
+```bash
+adb shell "dumpsys window | grep mCurrentFocus"
+```
+
+### Issue_66：vivo后台弹窗权限判断
+
+    private fun isBackgroundStartAllowed(context: Context): Boolean {
+            if (PhoneSystemUtil.isVivo) {
+                return getViVoBgPermissionStatus(context) == 0
+            }
+            return true
+        }
+        
+    /**
+     * 判断ViVo后台弹出界面状态， 1无权限，0有权限
+     * @param context context
+     */
+    private fun getViVoBgPermissionStatus(context: Context): Int {
+        val uri: Uri = Uri.parse("content://com.vivo.permissionmanager.provider.permission/start_bg_activity")
+        val selection = "pkgname = ?"
+        val selectionArgs = arrayOf(context.packageName)
+        var state = 1
+        try {
+            context.contentResolver.query(uri, null, selection, selectionArgs, null)?.use {
+                if (it.moveToFirst()) {
+                    state = it.getInt(it.getColumnIndex("currentstate"))
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return state
+    }
+
+### Issue_67：android 11悬浮通知
+
+1. setCustomHeadsUpContentView
+2. setTimeoutAfter(0)
+3. setAllowSystemGeneratedContextualActions(false)
+4. setBubbleMetadata(null)
+5. setFullScreenIntent(pendingIntent,true)
+
+### Issue_68：windows机型快速配置Android开发环境
+
+1. 下载Android Studio
+2. adb配置：C:/user/admin/AppData/Local/Android/Sdk；platform-tools和tools添加到环境变量path下
+3. 获取sha1时提示key-tool命令不对，此时 cd 到C:/Program Files/Android/android Studio/jre/bin下，可以看到这个目录下有个key tool.exe。然后copy 获取sha1命令就行
+
+### Issue_69：popWindow中使用EditText,软键盘不弹出、无焦点
+
+1. 点击后软键盘不弹出：
+
+   ```kotlin
+   isFocusable = true
+   setBackgroundDrawable(ColorDrawable())
+   ```
+
+2. 首次展示时EditText无焦点：inputView.requestFocus()
+
+### Issue_70：format时区域问题导致逗号变成点(1,000-1.000)
+
+指定Local.ENGLISH
+
