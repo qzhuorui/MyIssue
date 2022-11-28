@@ -1078,6 +1078,11 @@ binding.adFunctionMessage.text = HtmlCompat.fromHtml(
                         "长时间未查杀病毒，可能有<font color=\"#2A81F8\">木马病毒</font>入侵风险",
                         HtmlCompat.FROM_HTML_MODE_COMPACT
                     )
+////
+HtmlCompat.fromHtml(
+                    "<strong><font color=\"#F8583B\">xxx</font></strong>xx",
+                    HtmlCompat.FROM_HTML_MODE_COMPACT
+                )
 ```
 
 ### Issue_62：监听USB插拔广播
@@ -1240,3 +1245,52 @@ binding?.refreshIcon?.startAnimation(rotateAnim)
 </set>
 ```
 
+### Issue_72：状态栏UI相关操作：WindowInsetsControllerCompat
+
+```kotlin
+//修改系统状态栏颜色，从白转黑
+ViewCompat.getWindowInsetsController(findViewById<FrameLayout>(android.R.id.content))?.let {
+                it.isAppearanceLightStatusBars = true
+  }
+```
+
+### Issue_73：保留两位小数，每三位以逗号隔开
+
+```kotlin
+fun String.addDots():String {
+	val format = DecimalFormat.getInstance(Local.ENGLISH) as DecimalFormat
+	format.applyPattern("#,###")
+  return format.format(this.toDouble())
+ }
+
+fun String.dotTwoFormat():String {
+	val format = DecimalFormat.getInstance(Local.ENGLISH) as DecimalFormat
+	format.applyPattern("#.##")
+  return format.format(this.toDouble())
+ }
+```
+
+### Issue_74：无网络情况下，配置Android开发环境
+
+1. install Android Studio 安装包
+2. copy SDK至电脑的AppLocal/Android路径。在AndroidStudio中打开Project Structure下指定SDK路径
+3. copy gradle文件“gradle-7.3.3-all.zip"到电脑的.gradle/wrapper/dists下，自己解压缩后删除掉zip包。然后在AndroidStudio中删除"grade-wrapper.properties"中的在线下载路径，再在setting中搜索gradle配置，指定gradle路径。
+4. resetAndExit Androidstudio
+5. 此时开启热点sync tools.build和相关依赖即可
+
+### Issue_75：Android11,12查询app是否安装，打开第三方应用，因权限收紧导致的失败
+
+1. tools.build:gradle版本不低于4.0
+
+2. manifest中（关键）
+
+   1. ```groovy
+      <queries> 
+        <intent>
+        	<action android:name="android.intent.action.MAIN" />
+        </intent> 
+      </queries>
+      ```
+
+3. packageManager.getLaunchIntentForPackage(pckName)
+4. packageManager.getPackageInfo（可能需要query all packages权限声明）
